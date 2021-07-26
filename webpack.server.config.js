@@ -25,8 +25,22 @@ module.exports = (options = {}) => ({
   mode: options.mode,
   entry: options.entry,
   optimization: options.optimization,
+  output: {
+    library: '',
+    libraryTarget: 'commonjs-module'
+  },
   module: {
     rules: [
+      {
+        test: /node_modules\/bull\/lib\/commands\/index\.js$/,
+        use: {
+          loader: 'string-replace-loader',
+          options: {
+            search: '__dirname',
+            replace: `"${path.dirname(require.resolve('bull'))}/lib/commands"`
+          }
+        }
+      },
       {
         test: /\.jsx?$/, // Transform all .js and .jsx files required somewhere with Babel
         exclude: /node_modules/,

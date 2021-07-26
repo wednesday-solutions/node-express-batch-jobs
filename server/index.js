@@ -1,17 +1,22 @@
 import express from 'express';
 import graphqlHTTP from 'express-graphql';
-import { GraphQLSchema } from 'graphql';
 import dotenv from 'dotenv';
-
-import { connect } from '@database';
+import cors from 'cors';
+import { SubscriptionServer } from 'subscriptions-transport-ws/dist/server';
+import { GraphQLSchema, execute, subscribe } from 'graphql';
+import 'whatwg-fetch';
+import { ApolloServer } from 'apollo-server-express';
+import { createServer } from 'http';
 import rTracer from 'cls-rtracer';
-
+import { connect } from '@database';
 import { QueryRoot } from '@gql/queries';
 import { MutationRoot } from '@gql/mutations';
 import { isTestEnv, logger } from '@utils/index';
+import { initQueues } from '@utils/queue';
+import { SubscriptionRoot } from '@gql/subscriptions';
 
 let app;
-export const init = () => {
+export const init = async () => {
   // configure environment variables
   dotenv.config({ path: `.env.${process.env.ENVIRONMENT}` });
 
@@ -19,12 +24,13 @@ export const init = () => {
   connect();
 
   // create the graphQL schema
-  const schema = new GraphQLSchema({ query: QueryRoot, mutation: MutationRoot });
+  const schema = new GraphQLSchema({ query: QueryRoot, mutation: MutationRoot, subscription: SubscriptionRoot });
 
   if (!app) {
     app = express();
   }
   app.use(rTracer.expressMiddleware());
+  app.use(cors());
 
   app.use(
     '/graphql',
@@ -45,7 +51,23 @@ export const init = () => {
   });
   /* istanbul ignore next */
   if (!isTestEnv()) {
-    app.listen(9000);
+    const httpServer = createServer(app);
+    const server = new ApolloServer({
+      schema
+    });
+    await server.start();
+    server.applyMiddleware({ app });
+    const subscriptionServer = SubscriptionServer.create(
+      { schema, execute, subscribe },
+      { server: httpServer, path: server.graphqlPath }
+    );
+    ['SIGINT', 'SIGTERM'].forEach(signal => {
+      process.on(signal, () => subscriptionServer.close());
+    });
+    httpServer.listen(9000, () => {
+      console.log(`Server is now running on http://localhost:9000/graphql`);
+    });
+    initQueues();
   }
 };
 

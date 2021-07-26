@@ -8,6 +8,7 @@ import { addressMutations } from '@gql/models/addresses';
 import { storeMutations } from '@gql/models/stores';
 import { storeProductMutations } from '@gql/models/storeProducts';
 import { supplierProductMutations } from '@gql/models/supplierProducts';
+import { scheduleJob } from '@gql/custom/scheduleJobMutation';
 
 export const createResolvers = model => ({
   createResolver: (parent, args, context, resolveInfo) => model.create(args),
@@ -46,6 +47,9 @@ export const addMutations = () => {
       resolve: createResolvers(DB_TABLES[table].model).deleteResolver
     };
   });
+
+  // custom mutations
+  mutations.scheduleJob = scheduleJob;
   return mutations;
 };
 

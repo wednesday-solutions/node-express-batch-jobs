@@ -30,7 +30,7 @@
     "lint:staged": "lint-staged",
     "prettify": "prettier --write",
     "precommit": "lint:staged",
-    "test": "jest --coverage --detectOpenHandles"
+    "test": "jest --coverage --detectOpenHandles  --forceExit"
   },
   "dependencies": {
     "@babel/cli": "^7.8.4",
@@ -40,8 +40,10 @@
     "@babel/plugin-syntax-optional-chaining": "^7.8.3",
     "@babel/preset-env": "^7.9.6",
     "@babel/preset-flow": "^7.12.1",
+    "apollo-server-express": "^3.0.2",
     "aws-sdk": "^2.780.0",
     "babel-eslint": "^10.1.0",
+    "bull": "^3.26.0",
     "cls-rtracer": "^2.5.1",
     "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
@@ -51,8 +53,10 @@
     "fs": "^0.0.1-security",
     "graphql": "^15.4.0",
     "graphql-iso-date": "^3.6.1",
+    "graphql-redis-subscriptions": "^2.4.0",
     "graphql-relay": "^0.6.0",
     "graphql-sequelize": "^9.4.0",
+    "graphql-subscriptions": "^1.2.1",
     "html-webpack-plugin": "^4.5.0",
     "http": "^0.0.1-security",
     "loadash": "^1.0.0",
@@ -69,6 +73,7 @@
     "sequelize": "^6.3.5",
     "sqlite3": "^5.0.0",
     "stream": "^0.0.2",
+    "subscriptions-transport-ws": "0.9.17",
     "superagent": "^6.1.0",
     "supertest": "^4.0.2",
     "tedious": "^9.2.1",
@@ -79,6 +84,7 @@
     "webpack-dev-middleware": "3.6.2",
     "webpack-hot-middleware": "2.24.3",
     "webpack-node-externals": "^1.7.2",
+    "whatwg-fetch": "^3.6.2",
     "winston": "^3.3.3",
     "zlib": "^1.0.5"
   },
@@ -118,7 +124,8 @@
     "prettier-config-standard": "^1.0.1",
     "sequelize-cli": "^6.2.0",
     "sequelize-mock": "^0.10.2",
-    "shelljs": "^0.8.3"
+    "shelljs": "^0.8.3",
+    "string-replace-loader": "^3.0.3"
   },
   "precommit": "lint:staged",
   "lint-staged": {
